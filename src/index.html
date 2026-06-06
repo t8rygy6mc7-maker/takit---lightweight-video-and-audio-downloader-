@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Takit</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <!-- Title bar -->
+    <header class="topbar">
+      <div class="brand">
+        <span class="logo" aria-hidden="true"></span>
+        <span class="brand-name">Takit</span>
+      </div>
+      <button id="nav-settings" class="icon-btn" title="Settings" aria-label="Settings">⚙</button>
+    </header>
+
+    <!-- First-run / missing-tools banner -->
+    <section id="setup" class="banner hidden">
+      <div class="banner-body">
+        <strong id="setup-title">Set up Takit</strong>
+        <p id="setup-text">Takit needs yt-dlp and ffmpeg to download. They’ll be saved inside the app — about 40–110&nbsp;MB, one time.</p>
+        <div id="setup-progress" class="progress hidden"><div id="setup-bar" class="progress-bar"></div></div>
+        <span id="setup-status" class="muted"></span>
+      </div>
+      <button id="setup-btn" class="btn primary">Set up</button>
+    </section>
+
+    <!-- Main downloader view -->
+    <main id="view-main">
+      <div class="card">
+        <label class="field-label" for="url">Link</label>
+        <div class="url-row">
+          <input id="url" type="text" placeholder="Paste a video or audio link…" autocomplete="off" spellcheck="false" />
+          <button id="paste" class="btn ghost" title="Paste from clipboard">Paste</button>
+        </div>
+
+        <div class="seg" role="tablist" aria-label="Download type">
+          <button id="mode-video" class="seg-btn active" role="tab">🎬 Video</button>
+          <button id="mode-audio" class="seg-btn" role="tab">🎵 Audio</button>
+        </div>
+
+        <div class="opts-row">
+          <div id="video-opts" class="opt">
+            <label class="field-label" for="quality">Quality</label>
+            <select id="quality">
+              <option value="best">Best available</option>
+              <option value="2160">4K · 2160p</option>
+              <option value="1440">1440p</option>
+              <option value="1080" selected>1080p</option>
+              <option value="720">720p</option>
+              <option value="480">480p</option>
+              <option value="360">360p</option>
+            </select>
+          </div>
+          <div id="audio-opts" class="opt hidden">
+            <label class="field-label" for="audio-format">Format</label>
+            <select id="audio-format">
+              <option value="mp3" selected>MP3</option>
+              <option value="m4a">M4A (AAC)</option>
+              <option value="opus">Opus</option>
+              <option value="flac">FLAC (lossless)</option>
+              <option value="wav">WAV</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="actions">
+          <button id="add" class="btn primary grow">Download</button>
+          <button id="info" class="btn ghost" title="Preview title & thumbnail">Preview</button>
+        </div>
+
+        <div id="error" class="inline-error hidden"></div>
+
+        <div id="preview" class="preview hidden">
+          <img id="preview-thumb" alt="" />
+          <div class="preview-meta">
+            <strong id="preview-title"></strong>
+            <span id="preview-sub" class="muted"></span>
+          </div>
+        </div>
+      </div>
+
+      <div class="list-head">
+        <h2>Downloads</h2>
+        <button id="clear-done" class="link-btn hidden">Clear finished</button>
+      </div>
+      <div id="list" class="list"></div>
+      <p id="empty" class="empty muted">Nothing downloading yet. Paste a link above to start.</p>
+    </main>
+
+    <!-- Settings view -->
+    <main id="view-settings" class="hidden">
+      <div class="card">
+        <div class="settings-row">
+          <div>
+            <span class="field-label">Download folder</span>
+            <div id="dl-folder" class="path muted"></div>
+          </div>
+          <div class="row-actions">
+            <button id="change-folder" class="btn ghost">Change</button>
+            <button id="open-folder" class="btn ghost">Open</button>
+          </div>
+        </div>
+
+        <div class="settings-grid">
+          <label class="field-label">Default type
+            <select id="set-mode">
+              <option value="video">Video</option>
+              <option value="audio">Audio</option>
+            </select>
+          </label>
+          <label class="field-label">Default quality
+            <select id="set-quality">
+              <option value="best">Best</option>
+              <option value="2160">2160p</option>
+              <option value="1440">1440p</option>
+              <option value="1080">1080p</option>
+              <option value="720">720p</option>
+              <option value="480">480p</option>
+              <option value="360">360p</option>
+            </select>
+          </label>
+          <label class="field-label">Default audio
+            <select id="set-audio">
+              <option value="mp3">MP3</option>
+              <option value="m4a">M4A</option>
+              <option value="opus">Opus</option>
+              <option value="flac">FLAC</option>
+              <option value="wav">WAV</option>
+            </select>
+          </label>
+          <label class="field-label">Simultaneous
+            <select id="set-concurrent">
+              <option value="1">1</option>
+              <option value="2">2</option>
+              <option value="3">3</option>
+              <option value="4">4</option>
+              <option value="5">5</option>
+              <option value="6">6</option>
+            </select>
+          </label>
+        </div>
+
+        <label class="check"><input type="checkbox" id="set-meta" /> Save title &amp; metadata into files</label>
+        <label class="check"><input type="checkbox" id="set-thumb" /> Embed cover art in audio files</label>
+        <label class="check"><input type="checkbox" id="set-open" /> Reveal file when a download finishes</label>
+        <label class="check"><input type="checkbox" id="set-tray" /> Keep running in the tray when window is closed</label>
+
+        <div class="settings-row">
+          <div>
+            <span class="field-label">Downloader engine</span>
+            <div id="engine-status" class="muted">Checking…</div>
+          </div>
+          <div class="row-actions">
+            <button id="update-ytdlp" class="btn ghost">Update yt-dlp</button>
+            <button id="reinstall" class="btn ghost">Reinstall tools</button>
+          </div>
+        </div>
+
+        <details class="advanced">
+          <summary>Advanced</summary>
+          <label class="field-label">Custom yt-dlp path
+            <input id="set-ytdlp-path" type="text" placeholder="(optional) leave blank to auto-detect" />
+          </label>
+          <label class="field-label">Custom ffmpeg path or folder
+            <input id="set-ffmpeg-path" type="text" placeholder="(optional) leave blank to auto-detect" />
+          </label>
+          <p class="muted small">Concurrency changes apply after restarting Takit.</p>
+        </details>
+      </div>
+
+      <div class="actions">
+        <button id="settings-back" class="btn ghost grow">Back</button>
+        <button id="settings-save" class="btn primary grow">Save</button>
+      </div>
+    </main>
+
+    <script src="main.js"></script>
+  </body>
+</html>

@@ -1,0 +1,25 @@
+# Rust / Tauri build output
+/src-tauri/target/
+/src-tauri/gen/schemas/
+
+# OS cruft
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editors
+.vscode/
+.idea/
+*.swp
+
+# Local build artifacts
+*.app
+*.dmg
+*.AppImage
+*.deb
+*.rpm
+*.msi
+*.exe~
+
+# Node (not used, but guard against accidental installs)
+node_modules/

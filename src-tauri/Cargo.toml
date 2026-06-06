@@ -1,0 +1,47 @@
+[package]
+name = "takit"
+version = "0.1.0"
+description = "Lightweight video & audio downloader"
+authors = ["Takit contributors"]
+license = "MIT"
+repository = "https://github.com/t8rygy6mc7-maker/takit"
+edition = "2021"
+rust-version = "1.77"
+
+# The library is what Tauri actually builds; main.rs is a thin shim.
+[lib]
+name = "takit_lib"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+tauri = { version = "2", features = ["tray-icon", "image-png"] }
+tauri-plugin-dialog = "2"
+tauri-plugin-opener = "2"
+tauri-plugin-clipboard-manager = "2"
+
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+
+tokio = { version = "1", features = ["process", "io-util", "macros", "rt-multi-thread", "fs", "sync", "time"] }
+reqwest = { version = "0.12", default-features = false, features = ["rustls-tls", "stream"] }
+futures-util = "0.3"
+
+# Archive extraction for the ffmpeg downloads (pure-Rust, no C dependencies).
+zip = { version = "2", default-features = false, features = ["deflate"] }
+tar = "0.4"
+lzma-rs = "0.3"
+
+# Desktop-only: focus the running instance instead of launching a second copy.
+[target.'cfg(not(any(target_os = "android", target_os = "ios")))'.dependencies]
+tauri-plugin-single-instance = "2"
+
+# Optimise the release build for a small, low-overhead binary.
+[profile.release]
+opt-level = "s"
+lto = true
+codegen-units = 1
+panic = "abort"
+strip = true
